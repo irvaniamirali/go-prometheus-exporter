@@ -1,0 +1,65 @@
+{
+  "__inputs": [],
+  "title": "Go Custom Exporter - System & App Monitoring",
+  "tags": ["go", "prometheus", "exporter"],
+  "timezone": "browser",
+  "editable": true,
+  "hideControls": false,
+  "panels": [
+    {
+      "type": "stat",
+      "title": "CPU Usage %",
+      "gridPos": { "x": 0, "y": 0, "w": 6, "h": 6 },
+      "targets": [{ "expr": "system_cpu_usage_percent", "legendFormat": "CPU" }],
+      "fieldConfig": {
+        "defaults": { "unit": "percent", "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 70 }, { "color": "red", "value": 90 }]}}
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Memory Used",
+      "gridPos": { "x": 6, "y": 0, "w": 6, "h": 6 },
+      "targets": [{ "expr": "system_memory_used_bytes / 1024 / 1024 / 1024", "legendFormat": "Used (GB)" }],
+      "fieldConfig": { "defaults": { "unit": "decbytes" }}
+    },
+    {
+      "type": "stat",
+      "title": "Disk Usage %",
+      "gridPos": { "x": 12, "y": 0, "w": 6, "h": 6 },
+      "targets": [{ "expr": "system_disk_usage_percent{path=\"/\"}", "legendFormat": "Root" }],
+      "fieldConfig": {
+        "defaults": { "unit": "percent", "thresholds": { "mode": "absolute", "steps": [{ "color": "green" }, { "color": "yellow", "value": 70 }, { "color": "red", "value": 90 }]}}
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Network I/O",
+      "gridPos": { "x": 0, "y": 6, "w": 12, "h": 8 },
+      "targets": [
+        { "expr": "rate(system_network_sent_bytes_total[1m])", "legendFormat": "Sent {{interface}}" },
+        { "expr": "rate(system_network_received_bytes_total[1m])", "legendFormat": "Recv {{interface}}" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "Bps" }}
+    },
+    {
+      "type": "timeseries",
+      "title": "HTTP Request Rate",
+      "gridPos": { "x": 12, "y": 6, "w": 6, "h": 8 },
+      "targets": [{ "expr": "rate(http_requests_total[1m])", "legendFormat": "{{path}} {{method}}" }],
+      "fieldConfig": { "defaults": { "unit": "reqps" }}
+    },
+    {
+      "type": "timeseries",
+      "title": "Request Latency",
+      "gridPos": { "x": 18, "y": 6, "w": 6, "h": 8 },
+      "targets": [{ "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le))", "legendFormat": "p95" }],
+      "fieldConfig": { "defaults": { "unit": "s" }}
+    }
+  ],
+  "templating": { "list": [] },
+  "annotations": { "list": [] },
+  "refresh": "5s",
+  "schemaVersion": 38,
+  "version": 1,
+  "links": []
+}
